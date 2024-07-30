@@ -1,6 +1,6 @@
-from pydantic import BaseModel, field_validator, computed_field, ConfigDict, field_serializer, Field
+from pydantic import BaseModel, field_validator, computed_field, ConfigDict, field_serializer, Field, SkipValidation
 from aenum import MultiValueEnum
-from exceptions import TierListException, ImpossibleTierException
+from app.exceptions import AMoonException, ImpossibleTierException
 from PIL import Image
 from app.domain.item import Item
 from typing import Optional

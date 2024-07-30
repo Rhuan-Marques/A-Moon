@@ -1,8 +1,10 @@
 from pydantic import BaseModel, field_validator, computed_field
 from app.domain.tier import Tier, TierNames
+from typing import Optional
 
 class TierList(BaseModel):
   tiers: list[Tier] = []
+  title: Optional[str] = None
 
   def add_tier(self, tier: Tier):
     for stored_tier in self.tiers:

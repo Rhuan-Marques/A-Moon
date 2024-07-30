@@ -19,8 +19,11 @@ class ImageDownloaderServices:
   def get_image(self, query: str) -> Image:
     extention = ''
     retries = 0
+    input_is_url = validators.url(query)
+    if input_is_url:
+      self.logger.info('INPUT URL DETECTED')
     while retries < config.MAX_RETRIES_DOWNLOAD_IMAGE:
-      url = self.get_image_url(query, offset=retries)
+      url = query if input_is_url else self.get_image_url(query, offset=retries)
       extention = get_extention(url)
       if not extention:
         self.logger.info(f'Invalid image has no extention')
@@ -30,7 +33,7 @@ class ImageDownloaderServices:
         self.logger.info(f'got url for {query}')
         bytes = self.get_image_bytes(url)
         self.logger.info(f'got bytes')
-        filename = query.replace(' ', '') + '__'  + str(uuid.uuid4()) + get_extention(url)
+        filename = query.split('/')[-1] if input_is_url else query.replace(' ', '') + '__'  + str(uuid.uuid4()) + get_extention(url)
         filepath = self.save_image(bytes, filename)
         self.logger.info(f'saved image to {filepath}')
     
@@ -43,12 +46,10 @@ class ImageDownloaderServices:
         continue
 
     self.logger.error('Ow shit, we got a max retry')
-    return ImageComposer(self.logger).text_to_image(query)
+    return ImageComposer(self.logger).text_to_tier_image(query)
 
   def get_image_url(self, query: str, offset: int) -> str | None:
     "Returns the a single image url from duckduckgo search"
-    if validators.url(query):
-      return query
     search_results = ddgs.images(query, region='wt-wt', safesearch='off')       
     image_urls = [next(search_results).get("image") for _ in range(offset+1)]
 

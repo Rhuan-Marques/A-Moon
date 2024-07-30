@@ -1,8 +1,9 @@
 from app.config import config
-from PIL import Image, ImageDraw, ImageFont, ImageOps
+from PIL import Image, ImageDraw, ImageOps
 from app.domain.tier import Tier, TierNames
 from app.domain.tierlist import TierList
 from math import ceil
+from app.helpers.text_fonts import app_fonts
 
 class ImageComposer:
   def __init__(self, logger):
@@ -29,6 +30,13 @@ class ImageComposer:
     item_size = int(config.TIERLIST_MAX_X_SIZE / (items_per_line+1))
     border_size = int(item_size * config.BORDER_RATIO)
     tier_imgs = []
+    # --------- TITLE ---------
+    if tier_list.title:
+      title_font = app_fonts['TITLE']
+      image = Image.new('RGBA', (config.TIERLIST_MAX_X_SIZE, item_size), (0,0,0))
+      draw = ImageDraw.Draw(image)
+      draw.text((15,15), tier_list.title, (100,100,100), font=title_font)
+      tier_imgs.append(image)
     for tier in tier_list.tiers:
       x_cursor=0
       y_cursor=0
@@ -68,9 +76,9 @@ class ImageComposer:
     return full_image
 
 
-  def text_to_image(self, text: str) -> Image:
+  def text_to_tier_image(self, text: str) -> Image:
     image = Image.open('assets/text_template.png')
     draw = ImageDraw.Draw(image)
-    mf = ImageFont.truetype('assets/colvetica.otf', 200)
+    mf = app_fonts['STANDART']
     draw.text((15,15), text, (0,0,0), font=mf)
     return image

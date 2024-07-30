@@ -162,5 +162,5 @@ cython_debug/
 #.idea/
 
 # Other
-/generated/lists
+/generated/
 */__pycache__/
